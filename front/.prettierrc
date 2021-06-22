@@ -1,7 +1,7 @@
 {
-  "printWidth": 120,
-  "tapWidth": 2,
-  "singleQuote": true,
-  "trailingComma": "all",
-  "semi": true
+  "printWidth": 120, //줄바꿈 길이
+  "tapWidth": 2, //탭 길이
+  "singleQuote": true, //싱글따옴표를 사용하겠다
+  "trailingComma": "all", //객체뒤에 콤마를 찍겟다
+  "semi": true //세미콜론 사용여부
 }

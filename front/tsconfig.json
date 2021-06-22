@@ -3,14 +3,16 @@
     "esModuleInterop": true,
     "sourceMap": true,
     "lib": ["ES2020", "DOM"],
-    "jsx": "react",
+    "jsx": "react", //jsx파일을 다른 곳에서 사용할수도 있기때문애 명확하게 설정해준다
     "module": "esnext",
     "moduleResolution": "Node",
-    "target": "es5",
-    "strict": true,
+    "target": "es5", //위에서 명시한 es2020을 es5로 변환하겠다
+    "strict": true, //ts사용할때 엄격한모드를 사용하지 않으면 큰 의미가 없다
     "resolveJsonModule": true,
     "baseUrl": ".",
+    //절대경로 사용가능하게 해줌
     "paths": {
+      //타입코드를 칠때 형식이 맞나 검사할때 사용
       "@hooks/*": ["hooks/*"],
       "@components/*": ["components/*"],
       "@layouts/*": ["layouts/*"],

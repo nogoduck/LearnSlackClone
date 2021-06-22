@@ -1,3 +1,4 @@
 {
+  //prettier의 포맷형식을 따르겠다
   "extends": ["plugin:prettier/recommended"]
 }
