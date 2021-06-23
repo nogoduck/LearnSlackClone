@@ -15,16 +15,20 @@ import { Redirect, Link } from "react-router-dom";
 import useSWR from "swr";
 import fetcher from "../../utils/fetcher";
 
-// swr은 기본적으로 get요청에 대한 데이터를 저장한다, post를 못사용하는것은 아니다 통상적으로 get에 대한 데이터를 저장한다, 로딩상태를 알 수도 있다(data가 존재하지 않으면 로딩으로 간주)
+// swr은 기본적으로 get요청에 대한 데이터를 저장한다, post를 못사용하는것은 아니다 통상적으로 get에 대한 데이터를 저장한다, 로딩상태를 알 수도 있다(data가 존재하지 않으면 로딩으로 간주), 비동기요청뿐만아니라 브라우저의 로컬스토리지 데이터로 관리할 수 있다.
 // swr의 요청주기는 개발자가 지정할 수 있지만 굳이 그렇게 하지 않아도 탭만 다른곳 갔다가 와도 요청을 새로보낸다.
 // useSWR은 ReactQuery와 대체가능
 // fetcher라는 함수는 swr에 입력한 주소를 어떻게 처리할지 작성할 수 있다
+//swr은 데이터 저장용도로는 편하지만 요청을 자주 보내기때문에 이를 막아줄 필요가 있다 mutate 속성 사용
+//revalidate 와 mutate의 차이
+//revalidate : 서버에 요청을 보내서 데이터를 다시 받아온다
+//mutate : 서버에 요청을 보내지 않고 데이터를 수정한다
 
 //로그인은 대부분 쿠키에 저장한다 안전하기 떄문
 //CORS는 브라우저를 사용하지 않으면  발생하지않고
 //배포환경에서는 proxy를 사용하지 않는다 개발할때는 프론트에서 CORS를 해결하기 위한 방법중 하나다
 const SignIn = () => {
-  const { data, error, revalidate } = useSWR(
+  const { data, error, revalidate, mutate } = useSWR(
     "http://localhost:3095/api/users",
     fetcher,
     {
@@ -47,9 +51,9 @@ const SignIn = () => {
             withCredentials: true,
           }
         )
-        .then(() => {
+        .then((res) => {
           console.log("LOGIN SUCCEED");
-          revalidate(); //로그인 성공했을때만 fatcher 호출
+          mutate(res.data, false); //로그인 성공했을때만 fatcher 호출, OPTIMISTIC UI
         })
         .catch((error) => {
           setLogInError(error.response?.data?.statusCode === 401);
