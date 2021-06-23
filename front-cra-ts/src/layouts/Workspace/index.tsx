@@ -1,8 +1,9 @@
-import fetcher from "../utils/fetcher";
+import fetcher from "../../utils/fetcher";
 import axios from "axios";
 import React, { FC, useCallback } from "react";
 import useSWR, { mutate } from "swr";
 import { Redirect } from "react-router-dom";
+import { Header, ProfileImg, RightMenu } from "./styles";
 
 //FC타입안에 children이 들어있고 children을 사용하지 않는 컴포넌트는 VFC를 해주면 된다
 const Workspace: FC = ({ children }) => {
@@ -29,6 +30,13 @@ const Workspace: FC = ({ children }) => {
 
   return (
     <div>
+      <Header>
+        <RightMenu>
+          <span>
+            <ProfileImg src="http://placehold.it/30x30" />
+          </span>
+        </RightMenu>
+      </Header>
       <button onClick={onLogout}>로그아웃</button>
       {children}
     </div>

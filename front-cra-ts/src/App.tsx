@@ -1,7 +1,7 @@
 import React from "react";
 import loadable from "@loadable/component";
 import { Switch, Route, Redirect } from "react-router-dom";
-
+import "./App.css";
 const SignIn = loadable(() => import("./pages/SignIn"));
 const SignUp = loadable(() => import("./pages/SignUp"));
 const Channel = loadable(() => import("./pages/Channel"));
