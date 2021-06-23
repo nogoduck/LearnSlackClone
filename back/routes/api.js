@@ -790,6 +790,7 @@ router.get("/users", (req, res, next) => {
 });
 
 router.post("/users", isNotLoggedIn, async (req, res, next) => {
+  console.log("회원가입 요청");
   try {
     const exUser = await User.findOne({
       where: {
@@ -817,6 +818,7 @@ router.post("/users", isNotLoggedIn, async (req, res, next) => {
 });
 
 router.post("/users/login", isNotLoggedIn, (req, res, next) => {
+  console.log("로그인 요청");
   passport.authenticate("local", (err, user, info) => {
     if (err) {
       console.error(err);

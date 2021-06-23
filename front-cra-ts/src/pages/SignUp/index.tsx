@@ -1,3 +1,5 @@
+import useInput from "../../hooks/useInput";
+import { Link } from "react-router-dom";
 import React, { useState, useCallback } from "react";
 import axios from "axios";
 import {
@@ -10,7 +12,6 @@ import {
   LinkContainer,
   Success,
 } from "./styles";
-import useInput from "../../hooks/useInput";
 
 function SignUp() {
   const [email, onChangeEmail] = useInput("");
@@ -37,26 +38,33 @@ function SignUp() {
     [password]
   );
 
-  const onSubmit = useCallback((e) => {
-    e.preventDefault();
-    if (!mismatchError) {
-      console.log("Form Data: ", email, nickname, password, passwordCheck);
-      console.log("서버로 회원가입을 요청합니다");
-      axios
-        .post("http://localhost:3095/api/users", {
-          email,
-          nickname,
-          password,
-        })
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((err) => {
-          console.log(err.response);
-        })
-        .finally(() => {});
-    }
-  }, []);
+  const onSubmit = useCallback(
+    (e) => {
+      e.preventDefault();
+      if (!mismatchError) {
+        setSignUpError(false);
+        console.log("Form Data: ", email, nickname, password, passwordCheck);
+        console.log("서버로 회원가입을 요청합니다");
+
+        axios
+          .post("http://localhost:3095/api/users", {
+            email,
+            nickname,
+            password,
+          })
+          .then((res) => {
+            console.log(res);
+            setSignUpSuccess(true);
+          })
+          .catch((err) => {
+            console.log(err.response);
+            setSignUpError(true);
+          })
+          .finally(() => {});
+      }
+    },
+    [email, nickname, password, passwordCheck, mismatchError]
+  );
 
   return (
     <div id="container">
@@ -120,7 +128,7 @@ function SignUp() {
       </Form>
       <LinkContainer>
         이미 회원이신가요?&nbsp;
-        <a href="/login">로그인 하러가기</a>
+        <Link to="/">로그인 하러가기</Link>
       </LinkContainer>
     </div>
   );
