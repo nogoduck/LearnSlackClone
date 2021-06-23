@@ -3,8 +3,18 @@ import axios from "axios";
 import React, { FC, useCallback } from "react";
 import useSWR, { mutate } from "swr";
 import { Redirect } from "react-router-dom";
-import { Header, ProfileImg, RightMenu } from "./styles";
-
+import {
+  Channels,
+  Chats,
+  Header,
+  MenuScroll,
+  ProfileImg,
+  RightMenu,
+  WorkspaceName,
+  Workspaces,
+  WorkspaceWrapper,
+} from "./styles";
+import gravatar from "gravatar";
 //FC타입안에 children이 들어있고 children을 사용하지 않는 컴포넌트는 VFC를 해주면 된다
 const Workspace: FC = ({ children }) => {
   const { data, error, revalidate } = useSWR(
@@ -33,12 +43,22 @@ const Workspace: FC = ({ children }) => {
       <Header>
         <RightMenu>
           <span>
-            <ProfileImg src="http://placehold.it/30x30" />
+            <ProfileImg
+              src={gravatar.url(data.email, { s: "28px", d: "retro" })}
+              alt={data.nickname}
+            />
           </span>
         </RightMenu>
       </Header>
       <button onClick={onLogout}>로그아웃</button>
-      {children}
+      <WorkspaceWrapper>
+        <Workspaces>test</Workspaces>
+        <Channels>
+          <WorkspaceName>Sleact</WorkspaceName>
+          <MenuScroll>Menu Scroll</MenuScroll>
+        </Channels>
+        <Chats>{children}</Chats>
+      </WorkspaceWrapper>
     </div>
   );
 };

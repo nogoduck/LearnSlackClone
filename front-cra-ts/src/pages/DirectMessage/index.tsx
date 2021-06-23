@@ -1,14 +1,15 @@
 import React from "react";
 import Workspace from "../../layouts/Workspace";
-import { Container, Header, DragOver } from "./styles";
-const Channel = () => {
+import { Container, Header } from "./styles";
+
+const DirectMessage = () => {
   return (
     <Workspace>
       <Container>
-        <Header>채널</Header>
+        <Header>DM</Header>
       </Container>
     </Workspace>
   );
 };
 
-export default Channel;
+export default DirectMessage;
