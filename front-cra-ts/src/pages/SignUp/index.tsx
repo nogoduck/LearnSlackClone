@@ -13,8 +13,8 @@ import {
 import useInput from "../../hooks/useInput";
 
 function SignUp() {
-  const [email, onChangeEmail, setEmail] = useInput("");
-  const [nickname, onChangeNickname, setNickname] = useInput("");
+  const [email, onChangeEmail] = useInput("");
+  const [nickname, onChangeNickname] = useInput("");
   const [password, setPassword] = useState("");
   const [passwordCheck, setPasswordCheck] = useState("");
   const [mismatchError, setMismatchError] = useState(false);
@@ -39,8 +39,8 @@ function SignUp() {
 
   const onSubmit = useCallback((e) => {
     e.preventDefault();
-    console.log(email, nickname, password, passwordCheck);
     if (!mismatchError) {
+      console.log("Form Data: ", email, nickname, password, passwordCheck);
       console.log("서버로 회원가입을 요청합니다");
       axios
         .post("http://localhost:3095/api/users", {
