@@ -7,7 +7,7 @@ const useInput = <T = any>(initialValue: T): ReturnTypes<T> => {
   const handler = useCallback((e) => {
     setValue(e.target.value);
   }, []);
-  return [value, setValue, handler];
+  return [value, handler, setValue];
 };
 
 export default useInput;

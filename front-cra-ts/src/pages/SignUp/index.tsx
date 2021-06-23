@@ -13,8 +13,8 @@ import {
 import useInput from "../../hooks/useInput";
 
 function SignUp() {
-  const [email, setEmail, onChangeEmail] = useInput("");
-  const [nickname, setNickname, onChangeNickname] = useInput("");
+  const [email, onChangeEmail, setEmail] = useInput("");
+  const [nickname, onChangeNickname, setNickname] = useInput("");
   const [password, setPassword] = useState("");
   const [passwordCheck, setPasswordCheck] = useState("");
   const [mismatchError, setMismatchError] = useState(false);
