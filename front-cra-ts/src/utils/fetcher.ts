@@ -8,7 +8,7 @@ import axois from "axios";
 //쿠키는 백앤드에서 생성하고 프론트 브라우저에 기억을 하게하고
 //프론트앤드에서는 쿠키를 기억해둿다가 백앤드에 보내준다.
 const fetcher = (url: string) => {
-  axios
+  return axios
     .get(url, {
       withCredentials: true,
     })

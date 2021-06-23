@@ -13,13 +13,24 @@ import axios from "axios";
 import React, { useCallback, useState } from "react";
 import { Redirect, Link } from "react-router-dom";
 import useSWR from "swr";
+import fetcher from "../../utils/fetcher";
 
 // swr은 기본적으로 get요청에 대한 데이터를 저장한다, post를 못사용하는것은 아니다 통상적으로 get에 대한 데이터를 저장한다, 로딩상태를 알 수도 있다(data가 존재하지 않으면 로딩으로 간주)
 // swr의 요청주기는 개발자가 지정할 수 있지만 굳이 그렇게 하지 않아도 탭만 다른곳 갔다가 와도 요청을 새로보낸다.
 // useSWR은 ReactQuery와 대체가능
 // fetcher라는 함수는 swr에 입력한 주소를 어떻게 처리할지 작성할 수 있다
+
+//로그인은 대부분 쿠키에 저장한다 안전하기 떄문
+//CORS는 브라우저를 사용하지 않으면  발생하지않고
+//배포환경에서는 proxy를 사용하지 않는다 개발할때는 프론트에서 CORS를 해결하기 위한 방법중 하나다
 const SignIn = () => {
-  const { data, error } = useSWR("http://localhost:3095/api/users");
+  const { data, error, revalidate } = useSWR(
+    "http://localhost:3095/api/users",
+    fetcher,
+    {
+      dedupingInterval: 100000, //주기적으로 호출되는 것을 방지, 주기적으로 호출은 되지만 deduping 기간내에는 캐시에서 불러온다
+    }
+  );
   const [logInError, setLogInError] = useState(false);
   const [email, onChangeEmail] = useInput("");
   const [password, onChangePassword] = useInput("");
@@ -38,6 +49,7 @@ const SignIn = () => {
         )
         .then(() => {
           console.log("LOGIN SUCCEED");
+          revalidate(); //로그인 성공했을때만 fatcher 호출
         })
         .catch((error) => {
           setLogInError(error.response?.data?.statusCode === 401);
@@ -46,6 +58,14 @@ const SignIn = () => {
     [email, password]
   );
 
+  if (data === undefined) {
+    //페이지 강제로 이동할때 로딩문구
+    return <div>로딩중...</div>;
+  }
+  console.log("data: ", data);
+  if (data) {
+    return <Redirect to="/workspace/channel" />;
+  }
   // console.log(error, userData);
   // if (!error && userData) {
   //   console.log("로그인됨", userData);

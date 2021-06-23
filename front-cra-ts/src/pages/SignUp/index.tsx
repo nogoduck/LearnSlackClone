@@ -1,5 +1,5 @@
 import useInput from "../../hooks/useInput";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import React, { useState, useCallback } from "react";
 import axios from "axios";
 import {
@@ -12,8 +12,18 @@ import {
   LinkContainer,
   Success,
 } from "./styles";
+import fetcher from "../../utils/fetcher";
+import useSWR from "swr";
 
 function SignUp() {
+  const { data, error, revalidate } = useSWR(
+    "http://localhost:3095/api/users",
+    fetcher
+  );
+
+  //let을 사용하지 않는이유 :
+  // state나 callback은 모두 이전의 값들을 유지해주지만
+  //let은 입력이 감지될때마다 해당함수가 다시 실행되서 값이 유지가 되지 않는다
   const [email, onChangeEmail] = useInput("");
   const [nickname, onChangeNickname] = useInput("");
   const [password, setPassword] = useState("");
@@ -65,6 +75,14 @@ function SignUp() {
     },
     [email, nickname, password, passwordCheck, mismatchError]
   );
+
+  if (data === undefined) {
+    return <div>로딩중...</div>;
+  }
+  if (data) {
+    //return은 항상 hooks 코드보다 아래에 위치해야 한다
+    return <Redirect to="/workspace/channel" />;
+  }
 
   return (
     <div id="container">
