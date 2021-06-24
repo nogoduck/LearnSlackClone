@@ -1,8 +1,9 @@
 import fetcher from "../../utils/fetcher";
 import axios from "axios";
-import React, { FC, useCallback, useState } from "react";
+import React, { VFC, useCallback, useState } from "react";
 import useSWR, { mutate } from "swr";
-import { Link, Redirect } from "react-router-dom";
+import { Link, Redirect, Route, Switch } from "react-router-dom";
+import loadable from "@loadable/component";
 import {
   AddButton,
   Channels,
@@ -27,8 +28,12 @@ import { Button, Input, Label } from "../../pages/SignUp/styles";
 import useInput from "../../hooks/useInput";
 import { toast } from "react-toastify";
 import CreateChannelModal from "../../components/CreateChannelModal";
+
+const Channel = loadable(() => import("../../pages/Channel"));
+const DirectMessage = loadable(() => import("../../pages/DirectMessage"));
+
 //FC타입안에 children이 들어있고 children을 사용하지 않는 컴포넌트는 VFC를 해주면 된다
-const Workspace: FC = ({ children }) => {
+const Workspace: VFC = () => {
   //input같은 경우 다른 컴포넌트로 분리해주면 최적화에 도움이된다
   //입력이 될때마다 해당 컴포넌트가 리랜더링이 되기때문에 분리하여 독립적으로 사용하기 위함
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -113,7 +118,10 @@ const Workspace: FC = ({ children }) => {
     setShowWorkspaceModal((prev) => !prev);
   }, []);
 
-  const onClickAddChannel = useCallback(() => {}, []);
+  const onClickAddChannel = useCallback((e) => {
+    console.log("채널 생성 모달");
+    setShowCreateChannelModal(true);
+  }, []);
 
   if (!userData) {
     //return은 반드시 모든 hooks 아래에 배치해야 하며, 반복문이나 조건문 내에 hooks를 적용하여도 오류가 발생한다.
@@ -185,7 +193,12 @@ const Workspace: FC = ({ children }) => {
             </Menu>
           </MenuScroll>
         </Channels>
-        <Chats>CHAT</Chats>
+        <Chats>
+          <Switch>
+            <Route path="/workspace/channel" component={Channel} />
+            <Route path="/workspace/dm" component={DirectMessage} />
+          </Switch>
+        </Chats>
       </WorkspaceWrapper>
       <Modal show={showCreateWorkspaceModal} onCloseModal={onCloseModal}>
         <form onSubmit={onCreateWorkspace}>
