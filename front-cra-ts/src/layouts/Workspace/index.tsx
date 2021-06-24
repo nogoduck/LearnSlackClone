@@ -26,6 +26,8 @@ import { Button, Input, Label } from "../../pages/SignUp/styles";
 import useInput from "../../hooks/useInput";
 //FC타입안에 children이 들어있고 children을 사용하지 않는 컴포넌트는 VFC를 해주면 된다
 const Workspace: FC = ({ children }) => {
+  //input같은 경우 다른 컴포넌트로 분리해주면 최적화에 도움이된다
+  //입력이 될때마다 해당 함수가 전체 랜더링이 되기때문에 분리하여 독립적으로 사용하기 위함
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showCreateWorkspaceModal, setShowCreateWorkspaceModal] =
     useState(false);
@@ -50,17 +52,48 @@ const Workspace: FC = ({ children }) => {
       });
   }, []);
 
+  const onCloseUserProfile = useCallback((e) => {
+    console.log("Profile Menu Close");
+    e.stopPropagation();
+    setShowUserMenu(false);
+  }, []);
+
   const onClickUserProfile = useCallback(() => {
-    setShowUserMenu((prev) => !prev);
+    console.log("Profile Menu Open");
+    setShowUserMenu((prev) => !prev); //
   }, []);
 
   const onClickCreateWorkspace = useCallback(() => {
+    console.log("Create Modal Open");
     setShowCreateWorkspaceModal(true);
   }, []);
 
-  const onCreateWorkspace = useCallback(() => {}, []);
+  const onCreateWorkspace = useCallback(
+    (e) => {
+      e.preventDefault();
+      if (!newWorkspace || !newWorkspace.trim()) return; //필수값들이 작성되었나 검사, 띄어쓰기 하나만 입력햇을때 통과되는걸 막기 위해 trim 사용
+      if (!newUrl || !newUrl.trim()) return;
+      axios
+        .post("/api/workspaces", {
+          workspace: newWorkspace,
+          url: newUrl,
+        })
+        .then(() => {
+          revalidate();
+          setShowCreateWorkspaceModal(false);
+          setNewWorkspace("");
+          setNewUrl("");
+        })
+        .catch((err) => {
+          console.dir(err);
+        });
+    },
+    [newWorkspace, newUrl]
+  );
 
   const onCloseModal = useCallback(() => {
+    console.log("Close All Modal");
+    setShowUserMenu(false);
     setShowCreateWorkspaceModal(false);
   }, []);
 
@@ -81,7 +114,7 @@ const Workspace: FC = ({ children }) => {
               <Menu
                 style={{ right: 0, top: 38 }}
                 show={showUserMenu}
-                onCloseModal={onClickUserProfile}
+                onCloseModal={onCloseUserProfile}
               >
                 <ProfileModal>
                   <img
