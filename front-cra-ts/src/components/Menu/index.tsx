@@ -19,6 +19,10 @@ const Menu: FC<Props> = ({
     e.stopPropagation(); //부모태그로 이벤트가 전달되지 않는다
   }, []);
 
+  if (!show) {
+    return null;
+  }
+
   return (
     <CreateMenu onClick={onCloseModal}>
       <div style={style} onClick={stopPropagation}>

@@ -14,6 +14,7 @@ import {
   ProfileModal,
   RightMenu,
   WorkspaceButton,
+  WorkspaceModal,
   WorkspaceName,
   Workspaces,
   WorkspaceWrapper,
@@ -25,13 +26,16 @@ import Modal from "../../components/Modal";
 import { Button, Input, Label } from "../../pages/SignUp/styles";
 import useInput from "../../hooks/useInput";
 import { toast } from "react-toastify";
+import CreateChannelModal from "../../components/CreateChannelModal";
 //FC타입안에 children이 들어있고 children을 사용하지 않는 컴포넌트는 VFC를 해주면 된다
 const Workspace: FC = ({ children }) => {
   //input같은 경우 다른 컴포넌트로 분리해주면 최적화에 도움이된다
-  //입력이 될때마다 해당 함수가 전체 랜더링이 되기때문에 분리하여 독립적으로 사용하기 위함
+  //입력이 될때마다 해당 컴포넌트가 리랜더링이 되기때문에 분리하여 독립적으로 사용하기 위함
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showCreateWorkspaceModal, setShowCreateWorkspaceModal] =
     useState(false);
+  const [showWorkspaceModal, setShowWorkspaceModal] = useState(false);
+  const [showCreateChannelModal, setShowCreateChannelModal] = useState(false);
   const [newWorkspace, onChangeNewWorkspace, setNewWorkspace] = useInput("");
   const [newUrl, onChangeNewUrl, setNewUrl] = useInput("");
 
@@ -101,11 +105,18 @@ const Workspace: FC = ({ children }) => {
 
   const onCloseModal = useCallback(() => {
     console.log("Close All Modal");
-    setShowUserMenu(false);
     setShowCreateWorkspaceModal(false);
+    setShowCreateChannelModal(false);
   }, []);
 
+  const toggleWorkspaceModal = useCallback(() => {
+    setShowWorkspaceModal((prev) => !prev);
+  }, []);
+
+  const onClickAddChannel = useCallback(() => {}, []);
+
   if (!userData) {
+    //return은 반드시 모든 hooks 아래에 배치해야 하며, 반복문이나 조건문 내에 hooks를 적용하여도 오류가 발생한다.
     return <Redirect to="/signin" />;
   }
 
@@ -157,10 +168,24 @@ const Workspace: FC = ({ children }) => {
           <AddButton onClick={onClickCreateWorkspace}>+</AddButton>
         </Workspaces>
         <Channels>
-          <WorkspaceName>Sleact</WorkspaceName>
-          <MenuScroll>Menu Scroll</MenuScroll>
+          <WorkspaceName onClick={toggleWorkspaceModal}>
+            Sleact404
+          </WorkspaceName>
+          <MenuScroll>
+            <Menu
+              show={showWorkspaceModal}
+              onCloseModal={toggleWorkspaceModal}
+              style={{ top: 95, left: 80 }}
+            >
+              <WorkspaceModal>
+                <h2>Sleact</h2>
+                <button onClick={onClickAddChannel}>채널 만들기</button>
+                <button onClick={onLogout}>로그아웃</button>
+              </WorkspaceModal>
+            </Menu>
+          </MenuScroll>
         </Channels>
-        <Chats>{children}</Chats>
+        <Chats>CHAT</Chats>
       </WorkspaceWrapper>
       <Modal show={showCreateWorkspaceModal} onCloseModal={onCloseModal}>
         <form onSubmit={onCreateWorkspace}>
@@ -183,6 +208,10 @@ const Workspace: FC = ({ children }) => {
           <Button type="submit">생성하기</Button>
         </form>
       </Modal>
+      <CreateChannelModal
+        show={showCreateChannelModal}
+        onCloseModal={onCloseModal}
+      />
     </div>
   );
 };
