@@ -2,7 +2,7 @@ import fetcher from "../../utils/fetcher";
 import axios from "axios";
 import React, { VFC, useCallback, useState } from "react";
 import useSWR, { mutate } from "swr";
-import { Link, Redirect, Route, Switch } from "react-router-dom";
+import { Link, Redirect, Route, Switch, useParams } from "react-router-dom";
 import loadable from "@loadable/component";
 import {
   AddButton,
@@ -22,7 +22,7 @@ import {
 } from "./styles";
 import gravatar from "gravatar";
 import Menu from "../../components/Menu";
-import { IUser } from "../../typings/db";
+import { IChannel, IUser } from "../../typings/db";
 import Modal from "../../components/Modal";
 import { Button, Input, Label } from "../../pages/SignUp/styles";
 import useInput from "../../hooks/useInput";
@@ -52,6 +52,21 @@ const Workspace: VFC = () => {
     //타입을 명시하고 로그인이 안되어있을수도 있기에 조건을 추가한다 <IUser |false>
     dedupingInterval: 2000, //2초내로는 같은것을 호출하면 요청을 보내지 않고 캐시된것을 그대로 사용한다.
   });
+
+  const { workspace } = useParams<{ workspace: string }>();
+
+  //채널 데이터를 백엔드로부터 받아옴
+  //로그인 한 상태일때만 채널을 받아온다
+  const { data: channelData } = useSWR<IChannel[]>(
+    userData
+      ? `http://localhost:3095/api/workspace/${workspace}/channels`
+      : null,
+    fetcher,
+    {
+      dedupingInterval: 2000,
+    }
+  );
+
   const onLogout = useCallback(() => {
     axios
       .post("http://localhost:3095/api/users/logout", null, {
@@ -191,12 +206,21 @@ const Workspace: VFC = () => {
                 <button onClick={onLogout}>로그아웃</button>
               </WorkspaceModal>
             </Menu>
+            {/* {channelData?.map((v) => (
+              <div>{v.name}</div>
+            ))} */}
           </MenuScroll>
         </Channels>
         <Chats>
           <Switch>
-            <Route path="/workspace/channel" component={Channel} />
-            <Route path="/workspace/dm" component={DirectMessage} />
+            <Route
+              path="/workspace/:workspace/channel/:channel"
+              component={Channel}
+            />
+            <Route
+              path="/workspace/:workspace/dm/:id"
+              component={DirectMessage}
+            />
           </Switch>
         </Chats>
       </WorkspaceWrapper>
@@ -224,6 +248,7 @@ const Workspace: VFC = () => {
       <CreateChannelModal
         show={showCreateChannelModal}
         onCloseModal={onCloseModal}
+        setShowCreateChannelModal={setShowCreateChannelModal}
       />
     </div>
   );

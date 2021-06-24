@@ -1,16 +1,43 @@
-import React, { useCallback, FC } from "react";
+import axios from "axios";
+import React, { useCallback, VFC } from "react";
+import { useParams } from "react-router-dom";
 import useInput from "../../hooks/useInput";
 import { Button, Input, Label } from "../../pages/SignUp/styles";
 import Modal from "../Modal";
+import { toast } from "react-toastify";
 
 interface Props {
   show: boolean;
   onCloseModal: () => void;
+  setShowCreateChannelModal: (flag: boolean) => void;
 }
 
-const CreateChannelModal: FC<Props> = ({ show, onCloseModal }) => {
-  const [newChannel, onChangeNewChannel] = useInput("");
-  const onCreateChannel = useCallback(() => {}, []);
+const CreateChannelModal: VFC<Props> = ({ show, onCloseModal }) => {
+  const [newChannel, onChangeNewChannel, setNewChannel] = useInput("");
+  const { workspace, channel } =
+    useParams<{ workspace: string; channel: string }>(); //주소에서 데이터 가져오기
+  const onCreateChannel = useCallback(
+    (e) => {
+      e.preventDefault();
+      axios
+        .post(
+          "/api/workspaces/channels",
+          { name: newChannel },
+          {
+            withCredentials: true,
+          }
+        )
+        .then(() => {
+          setShowCreateChannelModal(false);
+          setNewChannel("");
+        })
+        .catch((err) => {
+          console.dir(err);
+          toast.error(err.response?.data, { position: "bottom-center" });
+        });
+    },
+    [newChannel]
+  );
 
   return (
     <Modal show={show} onCloseModal={onCloseModal}>
@@ -30,3 +57,6 @@ const CreateChannelModal: FC<Props> = ({ show, onCloseModal }) => {
 };
 
 export default CreateChannelModal;
+function setShowCreateChannelModal(arg0: boolean) {
+  throw new Error("Function not implemented.");
+}
