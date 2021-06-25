@@ -59,7 +59,7 @@ const Workspace: VFC = () => {
   //로그인 한 상태일때만 채널을 받아온다
   const { data: channelData } = useSWR<IChannel[]>(
     userData
-      ? `http://localhost:3095/api/workspace/${workspace}/channels`
+      ? `http://localhost:3095/api/workspaces/${workspace}/channels`
       : null,
     fetcher,
     {
@@ -67,6 +67,7 @@ const Workspace: VFC = () => {
     }
   );
 
+  console.log("channelData: ", channelData);
   const onLogout = useCallback(() => {
     axios
       .post("http://localhost:3095/api/users/logout", null, {
@@ -179,7 +180,7 @@ const Workspace: VFC = () => {
       </Header>
       <WorkspaceWrapper>
         <Workspaces>
-          {userData.Workspaces.map((ws) => {
+          {userData?.Workspaces.map((ws) => {
             return (
               <Link to={`/workspace/${123}/channel/일반`} key={ws.id}>
                 <WorkspaceButton>
@@ -206,9 +207,9 @@ const Workspace: VFC = () => {
                 <button onClick={onLogout}>로그아웃</button>
               </WorkspaceModal>
             </Menu>
-            {/* {channelData?.map((v) => (
-              <div>{v.name}</div>
-            ))} */}
+            {channelData?.map((v) => {
+              return <div>{v.name}</div>;
+            })}
           </MenuScroll>
         </Channels>
         <Chats>
