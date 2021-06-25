@@ -139,6 +139,10 @@ const Workspace: VFC = () => {
     setShowCreateChannelModal(true);
   }, []);
 
+  const onClickInviteWorkspace = useCallback((e) => {
+    setShowCreateChannelModal(true);
+  }, []);
+
   if (!userData) {
     //return은 반드시 모든 hooks 아래에 배치해야 하며, 반복문이나 조건문 내에 hooks를 적용하여도 오류가 발생한다.
     return <Redirect to="/signin" />;
@@ -203,6 +207,9 @@ const Workspace: VFC = () => {
             >
               <WorkspaceModal>
                 <h2>Sleact</h2>
+                <button onClick={onClickInviteWorkspace}>
+                  워크스페이스에 사용자 초대
+                </button>
                 <button onClick={onClickAddChannel}>채널 만들기</button>
                 <button onClick={onLogout}>로그아웃</button>
               </WorkspaceModal>
